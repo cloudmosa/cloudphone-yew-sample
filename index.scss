@@ -1,0 +1,89 @@
+:root {
+  --letter-default-color: #edf2f7;
+  --letter-no-match-color: #797b7d;
+  --letter-word-match-color: #c5b566;
+  --letter-exact-match-color: #79a86b;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto,Open Sans,sans-serif,Arial,Helvetica,monospace;
+}
+
+* {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  word-wrap: break-word;
+}
+
+main {
+  text-align: center;
+  width: 100%;
+  width: 100%;
+  max-width: 240px;
+  max-height: 320px;
+}
+
+/* Word Grid */
+
+.grid {
+  display: flex;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem;
+  height: calc(1vh * 67);
+  width: 100%;
+  max-width: 100%;
+  height: 290px;
+  overflow: hidden;
+}
+
+.grid .row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.1em;
+}
+
+.grid .row .letter {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  background-color: var(--letter-default-color);
+  border-width: 2px;
+  border-style: solid;
+  border-image: none;
+  border-color: rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  color: black;
+  font-size: 32px;
+  font-weight: bold;
+  height: 44px;
+  text-transform: uppercase;
+  width: 44px;
+  user-select: none;
+}
+
+.grid .row .letter {
+  &.found-exact-match {
+    color: white;
+    background-color: var(--letter-exact-match-color);
+  }
+
+  &.letter.found-in-word {
+    color: white;
+    background-color: var(--letter-word-match-color);
+  }
+
+  &.letter.not-found {
+    color: white;
+    background-color: var(--letter-no-match-color);
+  }
+}
