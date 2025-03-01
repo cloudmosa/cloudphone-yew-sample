@@ -8,6 +8,7 @@ use web_sys::KeyboardEvent;
 use web_sys::wasm_bindgen::JsCast;
 use std::mem;
 use crate::views::Board;
+use crate::views::Toast;
 
 use super::constants::{WORD_LENGTH, MAX_GUESSES, KEYBOARD_TIMEOUT_MS};
 
@@ -25,6 +26,7 @@ pub enum GameMessage {
     Escape, /* SoftLeft */
     StartTimer(char),
     TimerFinished,
+    RemoveToast(String),
 }
 
 pub struct GameState {
@@ -36,11 +38,12 @@ pub struct GameState {
     timeout: Option<Timeout>,
     current_letter: Option<char>,
     current_digit: Option<char>,
+    toast_message: Option<String>,
 }
 
 impl GameState {
     fn with_word(word: String) -> Self {
-        let possible_words = include_str!("all-words.txt").lines().map(ToString::to_string).collect::<Vec<String>>();
+        let possible_words = include_str!("dictionary.txt").lines().map(ToString::to_string).collect::<Vec<String>>();
         let game = Game::new(MAX_GUESSES as u8, word.clone(), possible_words);
         let board_state = game.board(None, None);
 
@@ -53,6 +56,7 @@ impl GameState {
             timeout: None,
             current_letter: None,
             current_digit: None,
+            toast_message: None,
         }
     }
 }
@@ -105,14 +109,18 @@ impl Component for GameState {
 
                             true
                         },
-                        Err(_error) => {
-                            // TODO: error handling
+                        Err(error) => {
+                            self.toast_message = Some(error.to_string());
                             false
                         }
                     }
                 } else {
                     false
                 }
+            }
+            (_, GameMessage::RemoveToast(_message)) => {
+                self.toast_message = None;
+                true
             }
             (_, GameMessage::Escape) => {
                 /* TODO */
@@ -154,7 +162,7 @@ impl Component for GameState {
                 }
 
                 true // No need to re-render yet
-            },
+            }
             /*(_, GameMessage::CancelTimer) => {
                 if let Some(timeout) = self.timeout.take() {
                     timeout.cancel();
@@ -174,13 +182,20 @@ impl Component for GameState {
         }
     }
 
-    fn view(&self, _ctx: &Context<Self>) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
             <main>
                 <Board
                     current_guess={self.current_guess.clone()}
                     board={self.board_state.clone()}
                 />
+
+                { match self.toast_message.clone() {
+                    Some(message) => html! {
+                        <Toast message={message.clone()} on_close={ctx.link().callback(move |_| GameMessage::RemoveToast(message.clone()))} />
+                    },
+                    _ => html! { }
+                }}
             </main>
         }
     }

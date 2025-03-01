@@ -1,7 +1,5 @@
 use chrono::Local;
 
-use crate::dictionary::DICTIONARY;
-
 const ONE_DAY_IN_MS: u64 = 86_400_000;
 const START_DATE: u64 = 1740308400000; // 2/24/2025
 
@@ -15,7 +13,7 @@ fn current_timestamp() -> u64 {
     Local::now().timestamp_millis() as u64
 }
 
-pub fn get_word_of_day(dictionary: &[&str], word_index: Option<u64>) -> (String, u64, usize) {
+pub fn get_word_of_day(dictionary: Vec<String>, word_index: Option<u64>) -> (String, u64, usize) {
     let words_count = dictionary.len();
     let today_index = get_today_word_index();
     let index = word_index.unwrap_or(today_index) as usize;
@@ -24,6 +22,6 @@ pub fn get_word_of_day(dictionary: &[&str], word_index: Option<u64>) -> (String,
 }
 
 pub fn fetch_word_of_day() -> (String, u64, usize) {
-    let words: &[&str] = &DICTIONARY;
+    let words = include_str!("words.txt").lines().map(ToString::to_string).collect::<Vec<String>>();
     get_word_of_day(words, None)
 }

@@ -1,6 +1,5 @@
 mod app;
 mod words;
-mod dictionary;
 mod t9;
 mod views;
 mod constants;
